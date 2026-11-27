@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="Open in Koopi">
+<meta property="og:description" content="Someone shared something with you in Koopi.">
+<title>Open in Koopi</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; font: 17px/1.45 -apple-system, system-ui, sans-serif; color: #f2f0ff; background: radial-gradient(120% 90% at 20% 0%, #3a2a6a 0%, #1b1740 45%, #0b0e26 100%); }
+  main { width: 100%; max-width: 380px; text-align: center; }
+  h1 { margin: 0 0 6px; font-size: 34px; letter-spacing: -0.5px; }
+  p { margin: 0 0 22px; color: #c9c4ee; }
+  a.open { display: block; padding: 16px 20px; border-radius: 16px; background: #ff7a59; color: #1a1030; font-weight: 700; text-decoration: none; }
+  small { display: block; margin-top: 18px; color: #9d98c8; font-size: 14px; }
+  [hidden] { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Koopi</h1>
+  <p id="lead">Someone shared something with you.</p>
+  <a class="open" id="open" href="#" hidden>Open in Koopi</a>
+  <small id="hint" hidden>Nothing happened? Make sure Koopi is installed, then tap the button again.</small>
+  <small id="bad" hidden>This link is not complete. Ask for it again.</small>
+</main>
+<script>
+  // The link carries only an id: ?c=<collection id> or ?p=<piece id>. Nothing else, so no names travel in the address.
+  var UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  var q = new URLSearchParams(location.search);
+  var c = q.get('c'), p = q.get('p');
+  var target = c && UUID.test(c) ? 'koopi://collection?id=' + c : p && UUID.test(p) ? 'koopi://?piece=' + p : null;
+  if (!target) {
+    document.getElementById('bad').hidden = false;
+  } else {
+    var button = document.getElementById('open');
+    button.href = target;
+    button.hidden = false;
+    document.getElementById('lead').textContent = c ? 'A collection was shared with you.' : 'A piece was shared with you.';
+    setTimeout(function () { document.getElementById('hint').hidden = false; }, 1500);
+    location.href = target; // try at once; iOS asks "Open in Koopi?"
+  }
+</script>
+</body>
+</html>
